@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reste à Faire · Démonstrateur — Parking P. Mistral</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --p:      #5E17EB;
+  --ps:     #5D3AA3;
+  --y:      #FEBE32;
+  --i9:     #2A2055;
+  --i8:     #2F2E40;
+  --s50:    #F6F8F9;
+  --s100:   #EBF0F2;
+  --s200:   #DBE5EA;
+  --s300:   #CEDBE1;
+  --s400:   #BAC8CF;
+  --wh:     #FFFFFF;
+  --wa:     #25D366;
+  --r:      10px;
+  --font:   'DM Sans', sans-serif;
+  --fhead:  'Montserrat', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--s50);color:var(--i9);font-size:13px;line-height:1.55}
+
+/* ── NAV ── */
+.nav{background:var(--i9);position:sticky;top:0;z-index:200}
+.nav-in{max-width:1440px;margin:0 auto;padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.nav-l{display:flex;align-items:center;gap:14px}
+.nav-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
+.nav-proj{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);font-family:var(--fhead)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.chip{border-radius:999px;padding:3px 12px;font-size:10px;font-weight:600;font-family:var(--fhead);letter-spacing:.05em}
+.chip-y{background:var(--y);color:var(--i9)}
+.chip-g{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.45);display:flex;align-items:center;gap:5px}
+.dot-live{width:6px;height:6px;border-radius:50%;background:var(--y);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── TABS ── */
+.tabs{background:var(--wh);border-bottom:1px solid var(--s200);position:sticky;top:52px;z-index:100}
+.tabs-in{max-width:1440px;margin:0 auto;padding:0 28px;display:flex}
+.tab{padding:0 22px;height:42px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:var(--s400);cursor:pointer;border-bottom:2px solid transparent;transition:.15s;font-family:var(--fhead);letter-spacing:.03em;user-select:none}
+.tab:hover{color:var(--i9)}
+.tab.on{color:var(--p);border-bottom-color:var(--p)}
+.tab-n{width:18px;height:18px;border-radius:50%;background:var(--s100);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--s400)}
+.tab.on .tab-n{background:var(--p);color:var(--wh)}
+
+/* ── PANELS ── */
+.panel{display:none}.panel.on{display:block}
+.wrap{max-width:1440px;margin:0 auto;padding:24px 28px}
+
+/* ── SECTION TITLE ── */
+.stitle{font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--s400);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.stitle::after{content:'';flex:1;height:1px;background:var(--s200)}
+
+/* ── CARD ── */
+.card{background:var(--wh);border:1px solid var(--s200);border-radius:var(--r);padding:18px 20px}
+.card-t{font-size:9px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--s400);margin-bottom:14px}
+
+/* ── ARBO ── */
+.arbo-tree{display:flex;flex-direction:column;gap:2px}
+.arbo-node{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:.1s;user-select:none}
+.arbo-node:hover{background:var(--s50)}
+.arbo-node.sel{background:rgba(94,23,235,.06);border-left:3px solid var(--p)}
+.arbo-toggle{width:14px;height:14px;display:flex;align-items:center;justify-content:center;color:var(--s400);font-size:9px;flex-shrink:0;transition:.15s}
+.arbo-toggle.open{transform:rotate(90deg)}
+.arbo-icon{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.arbo-label{font-size:11.5px;font-weight:500;color:var(--i9)}
+.arbo-sub{font-size:10px;color:var(--s400);margin-left:auto}
+.arbo-children{margin-left:22px;border-left:1px solid var(--s200);padding-left:8px;display:none}
+.arbo-children.open{display:block}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{background:var(--s100);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);padding:8px 12px;text-align:left;border-bottom:1px solid var(--s200);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--s100);color:var(--i8);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(94,23,235,.015)}
+td.bold{font-weight:500;color:var(--i9)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;border-radius:4px;padding:2px 8px;letter-spacing:.04em;text-transform:uppercase}
+.badge-cfo{background:rgba(94,23,235,.08);color:var(--p)}
+.badge-cfa{background:rgba(93,58,163,.08);color:var(--ps)}
+.badge-zone{background:var(--s100);color:var(--s400)}
+
+/* ── PLANNING GRID ── */
+.plan-grid{overflow-x:auto;margin-bottom:24px}
+.plan-table{border-collapse:collapse;font-size:11px;min-width:900px}
+.plan-table th{background:var(--s100);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--s400);padding:8px 10px;text-align:center;border:1px solid var(--s200);white-space:nowrap}
+.plan-table th.zone-h{text-align:left;min-width:160px}
+.plan-table td{padding:6px 8px;border:1px solid var(--s100);text-align:center;vertical-align:middle}
+.plan-table td.zone-name{text-align:left;font-weight:500;color:var(--i9);background:var(--s50);padding:6px 12px}
+.plan-table td.zone-name .sub{font-size:10px;font-weight:400;color:var(--s400)}
+.pct-cell{border-radius:4px;padding:3px 6px;font-size:10px;font-weight:600;font-family:var(--fhead);display:inline-block;min-width:36px}
+.pct-0{background:var(--s100);color:var(--s400)}
+.pct-low{background:rgba(94,23,235,.08);color:var(--p)}
+.pct-mid{background:rgba(94,23,235,.15);color:var(--p)}
+.pct-high{background:var(--p);color:var(--wh)}
+.pct-done{background:var(--i9);color:var(--y)}
+.week-cur{background:rgba(254,190,50,.08)!important}
+.week-cur th{background:rgba(254,190,50,.15)!important;color:var(--i9)!important}
+
+/* ── SIMULATION ── */
+.sim-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.sim-phone{background:var(--i9);border-radius:20px;padding:16px;min-height:400px;display:flex;flex-direction:column}
+.sim-phone-bar{background:rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sim-phone-name{font-size:12px;font-weight:500;color:var(--wh)}
+.sim-phone-sub{font-size:10px;color:rgba(255,255,255,.35)}
+.wa-avatar{width:32px;height:32px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.messages{flex:1;display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:320px;padding-right:4px}
+.msg{max-width:85%;padding:9px 13px;border-radius:12px;font-size:11.5px;line-height:1.55}
+.msg-bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border-radius:12px 12px 12px 2px;align-self:flex-start}
+.msg-user{background:var(--wa);color:var(--wh);border-radius:12px 12px 2px 12px;align-self:flex-end}
+.msg-time{font-size:9px;opacity:.4;margin-top:4px;text-align:right}
+.msg-typing{display:flex;gap:4px;align-items:center;padding:9px 13px;background:rgba(255,255,255,.08);border-radius:12px 12px 12px 2px;align-self:flex-start;width:fit-content}
+.msg-typing span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);animation:blink 1.4s infinite}
+.msg-typing span:nth-child(2){animation-delay:.2s}
+.msg-typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.sim-input{display:flex;gap:8px;margin-top:10px}
+.sim-input textarea{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;font-size:11.5px;color:var(--wh);resize:none;height:60px;font-family:var(--font)}
+.sim-input textarea::placeholder{color:rgba(255,255,255,.25)}
+.btn-send{background:var(--wa);border:none;border-radius:10px;padding:0 16px;color:var(--wh);font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.btn-send:hover{opacity:.85}
+
+.sim-result{display:flex;flex-direction:column;gap:10px}
+.res-card{background:var(--wh);border:1px solid var(--s200);border-radius:var(--r);padding:16px 18px}
+.res-title{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+.res-title.purple{color:var(--p)}
+.res-title.yellow{color:var(--i9)}
+.res-row{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid var(--s100);font-size:11px}
+.res-row:last-child{border-bottom:none}
+.res-zone{flex:1;font-weight:500;color:var(--i9)}
+.res-pct{font-weight:600;font-family:var(--fhead);font-size:13px}
+.res-pct.up{color:var(--p)}
+.res-pct.alert{background:var(--y);color:var(--i9);padding:1px 7px;border-radius:3px}
+.question-item{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--s100);font-size:11.5px}
+.question-item:last-child{border-bottom:none}
+.q-num{width:20px;height:20px;border-radius:50%;background:var(--p);color:var(--wh);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;margin-top:1px}
+.q-text{color:var(--i8);line-height:1.55}
+.processing{display:flex;align-items:center;gap:10px;padding:14px;background:rgba(94,23,235,.04);border-radius:8px;font-size:11px;color:var(--p)}
+.spin{width:16px;height:16px;border:2px solid rgba(94,23,235,.2);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── 2-COL LAYOUT ── */
+.two-col{display:grid;grid-template-columns:280px 1fr;gap:16px;margin-bottom:24px}
+.full-col{margin-bottom:24px}
+
+@media(max-width:900px){
+  .two-col,.sim-layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-in">
+    <div class="nav-l">
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTg0IiBoZWlnaHQ9IjQ1IiB2aWV3Qm94PSIwIDAgMTg0IDQ1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGNsaXAtcGF0aD0idXJsKCNhKSI+PHBhdGggZD0iTTEyLjY4IDQ0LjA4Yy0uOS0uMS0xLjgtLjE2LTIuNjktLjNDNy4xMiA0My4zMyA0LjI2IDQyLjg2IDEuMzkgNDIuMzlhNC44NiA0Ljg2IDAgMCAxLTEuMjctLjA3TDIgMzQuNzdjLjg4LjExIDEuNzMuMjIgMi41Ny4zMSAzLjM0LjQ5IDYuNy43MiAxMC4wNy43M2ExMC4zIDEwLjMgMCAwIDAgMi43NC0uMzFjMi40LS41NiAzLjM0LTIuMDYgMy4xOS00LjYxYTUuMjYgNS4yNiAwIDAgMC0xLjc0LTMuNjIgMTEuNTggMTEuNTggMCAwIDAtMy45Mi0yLjI0Yy0yLjU4LS43Mi01LjEtMS42My03LjU1LTIuNzRBMTAuMjggMTAuMjggMCAwIDEgMS40NiAxOC44OWE5Ljg0IDkuODQgMCAwIDEtMS4zOS01Yy0uMjgtMi41NS4xOC01LjEyIDEuMzEtNy40QzIuMTIgNS4xNCAzLjEyIDMuOTcgNC4zMiAzLjAzYTExLjQ1IDExLjQ1IDAgMCAxIDQuMDYtMkMxMS4zOC4wOSAxNC41NC0uMjEgMTcuNjYuMTJjMy41My4zMyA3LjAzLjg1IDEwLjUgMS41NWwtLjY4IDcuNTdjLS44NC0uMDgtMS42NS0uMTgtMi40OC0uMjQtMy40OC0uMjUtNi45OS0uNTMtMTAuNDUtLjdhNS44OCA1Ljg4IDAgMCAwLTMuNDYuOTMgMy41IDMuNSAwIDAgMC0xLjIzIDIuNiAzLjU5IDMuNTkgMCAwIDAgMS41OCAyLjk4Yy44Ny42IDEuODQgMS4wNyAyLjg2IDEuMzggMi41NS43MyA1LjA0IDEuNjQgNy40NiAyLjU5YTIwLjQ1IDIwLjQ1IDAgMCAxIDMuNzQgMS45MSA5LjA4IDkuMDggMCAwIDEgMy41MyA1LjcxYy41MSAyLjQ4LjQ2IDUuMDQtLjE0IDcuNWExNC4zIDE0LjMgMCAwIDEtNi4zMiA4LjQ0IDE2LjM2IDE2LjM2IDAgMCAxLTUuMDMgMS44OCAxOC44MyAxOC44MyAwIDAgMS0zLjk5LjMyaC0uMTFsLTEuMTguMDF6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTEyOS4xNiAyNi4zNUgxMTQuMjZWMzUuMTlIMTMyLjg3VjQzLjI5SDEwNS44N1YuNzhIMTMyLjg3djguMUgxMTQuMjZ2OS41MUgxMjkuMTZ2Ny45NnoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMzQuNjEuNzdINjEuNjF2OC4wOUg0M3Y5LjUyaDEzLjg2djh6bTAgMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik00MyAzNS4yMmgxOC41OHY4LjFIMzQuNThWLjc3aDguNDJ6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTgxLjkxIDM1LjJjLjg2IDAgMS42OSAwIDIuNTEuMDJsLjI2LS4wNGMuNzEtMy4yMiAxLjQtNi40NCAyLjA5LTkuNjZsMTAuMTMtNDMuMTNjLjAyLS4xLjA1LS4yLjA4LS4yOUgxMDFsLTguNjcgMzguOTNjLS4xNi42Ni0uMTYuNjYtLjg2LjY2SDc1LjQ3QzcyLjIgMjkuMTggNjguOTMgMTQuOTggNjUuNjguNzloOC45NWMyLjQyIDExLjQ3IDQuODUgMjIuOTQgNy4yOCAzNC40MXoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTU1LjMgMTcuOTRhNS4xNCA1LjE0IDAgMCAxLTUuMTQgNS4xNGgtMS44NWE1LjE0IDUuMTQgMCAwIDEtNS4xNC01LjE0Vi43MWgtNS4xNXYxOC4zNGExMC4yOSAxMC4yOSAwIDAgMCAxMC4yOSAxMC4yOWg0YTEwLjI5IDEwLjI5IDAgMCAwIDEwLjI5LTEwLjI5Vi43MWgtNS4xNXoiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTc1LjY0LjY5aC0xMC43djI1LjM4aDUuMTF2LTYuODhoNS41OWE5LjE1IDkuMTUgMCAwIDAgOS4zNi05LjE0VjguMDdBOS4xNSA5LjE1IDAgMCAwIDE3NS42NC42OXptMi4yNCAxMC4zMWE0LjI5IDQuMjkgMCAwIDEtNC4yNCA0LjI0aC00Ljg1VjUuNTNoNC44NWE0LjI5IDQuMjkgMCAwIDEgNC4yNCA0LjI0eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxyZWN0IHdpZHRoPSIxODMuMDIiIGhlaWdodD0iNDQuMDgiIGZpbGw9IiNmZmYiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4=" alt="SeveUp" style="height:19px">
+      <div class="nav-sep"></div>
+      <span class="nav-proj">Reste à Faire · Démonstrateur</span>
+    </div>
+    <div class="nav-r">
+      <span class="chip chip-y">Parking P. Mistral</span>
+      <span class="chip chip-g"><span class="dot-live"></span>Données simulées</span>
+    </div>
+  </div>
+</nav>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tabs-in">
+    <div class="tab on" onclick="goTab('arbo',this)"><span class="tab-n">1</span>Arborescence spatiale</div>
+    <div class="tab" onclick="goTab('nomenc',this)"><span class="tab-n">2</span>Nomenclature</div>
+    <div class="tab" onclick="goTab('planning',this)"><span class="tab-n">3</span>Planning prévisionnel</div>
+    <div class="tab" onclick="goTab('sim',this)"><span class="tab-n">4</span>Simulation vocal chef</div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL 1 — ARBORESCENCE ═══════════ -->
+<div id="panel-arbo" class="panel on">
+<div class="wrap">
+  <div class="stitle">Arborescence spatiale · Site › Bâtiment › Niveau › Zone › Espace</div>
+  <div class="two-col">
+    <div class="card" style="align-self:start">
+      <div class="card-t">Structure du projet</div>
+      <div class="arbo-tree" id="arbo-tree"></div>
+    </div>
+    <div class="card" id="arbo-detail">
+      <div class="card-t">Sélectionner un nœud</div>
+      <div style="color:var(--s400);font-size:12px;padding:20px 0">Cliquez sur un élément de l'arborescence pour voir son détail.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ PANEL 2 — NOMENCLATURE ═══════════ -->
+<div id="panel-nomenc" class="panel">
+<div class="wrap">
+  <div class="stitle">Nomenclature équipements · CFO + CFA</div>
+  <div class="full-col card">
+    <div class="tbl-wrap">
+      <table id="nomenc-table">
+        <thead>
+          <tr>
+            <th>Type</th><th>Équipement</th><th>Zone</th><th>Espace</th>
+            <th>Qté totale</th><th>Tps unitaire (h)</th><th>Total heures</th>
+          </tr>
+        </thead>
+        <tbody id="nomenc-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ PANEL 3 — PLANNING ═══════════ -->
+<div id="panel-planning" class="panel">
+<div class="wrap">
+  <div class="stitle">Planning prévisionnel · Avancement cible par zone et par semaine</div>
+  <div class="full-col">
+    <div class="plan-grid">
+      <table class="plan-table" id="plan-table"></table>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+    <span style="font-size:10px;color:var(--s400)">Légende :</span>
+    <span class="pct-cell pct-0">0%</span>
+    <span class="pct-cell pct-low">1–25%</span>
+    <span class="pct-cell pct-mid">26–50%</span>
+    <span class="pct-cell pct-high">51–99%</span>
+    <span class="pct-cell pct-done">100%</span>
+    <span style="font-size:10px;color:var(--y);font-weight:600;margin-left:8px">▼ Semaine courante S14</span>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════ PANEL 4 — SIMULATION ═══════════ -->
+<div id="panel-sim" class="panel">
+<div class="wrap">
+  <div class="stitle">Simulation · Bot WhatsApp vendredi + extraction IA</div>
+  <div class="sim-layout">
+    <!-- PHONE -->
+    <div class="sim-phone">
+      <div class="sim-phone-bar">
+        <div class="wa-avatar">📱</div>
+        <div>
+          <div class="sim-phone-name">Karim B. — Chef de chantier</div>
+          <div class="sim-phone-sub">Parking P. Mistral · S14</div>
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="sim-input">
+        <textarea id="vocal-input" placeholder="Tapez la réponse du chef de chantier (ou cliquez sur un exemple ci-dessous)…"></textarea>
+        <button class="btn-send" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="sim-result" id="sim-result">
+      <div class="res-card">
+        <div class="res-title purple">En attente de réponse</div>
+        <div style="font-size:11px;color:var(--s400);padding:8px 0">Le bot envoie les questions au chef → il répond → l'IA extrait les données.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXEMPLES -->
+  <div class="stitle">Exemples de réponses vocales</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="card" style="cursor:pointer;transition:.15s" onclick="useExample(0)" onmouseover="this.style.borderColor='var(--p)'" onmouseout="this.style.borderColor='var(--s200)'">
+      <div style="font-size:10px;font-weight:600;color:var(--p);margin-bottom:5px">Exemple 1 — Réponse nominale</div>
+      <div style="font-size:11.5px;color:var(--i8);font-style:italic">"Ouais salut, alors R-1 zone A c'est à peu près 80%, les luminaires de circulation sont posés, les BAES aussi. Zone B stationnement on est à 60%, j'ai fini la rangée B1 et B2, B3 c'est en cours. Les locaux tech R-1 c'est 40%, j'attends la livraison du tableau TGBT."</div>
+    </div>
+    <div class="card" style="cursor:pointer;transition:.15s" onclick="useExample(1)" onmouseover="this.style.borderColor='var(--y)'" onmouseout="this.style.borderColor='var(--s200)'">
+      <div style="font-size:10px;font-weight:600;color:var(--y);margin-bottom:5px">Exemple 2 — Avec dérive détectée</div>
+      <div style="font-size:11.5px;color:var(--i8);font-style:italic">"Zone A c'est bon, 85%. Par contre zone B on est à 30%, j'ai eu un problème de livraison sur les luminaires parking, j'en ai que 20 sur les 60 prévus. Zone C locaux techniques j'ai pas encore commencé, j'attendais le gros œuvre."</div>
+    </div>
+    <div class="card" style="cursor:pointer;transition:.15s" onclick="useExample(2)" onmouseover="this.style.borderColor='var(--ps)'" onmouseout="this.style.borderColor='var(--s200)'">
+      <div style="font-size:10px;font-weight:600;color:var(--ps);margin-bottom:5px">Exemple 3 — Réponse vague (relance nécessaire)</div>
+      <div style="font-size:11.5px;color:var(--i8);font-style:italic">"Ça avance bien, on a bossé toute la semaine. Les gars ont été productifs. Quelques petits trucs à finir mais globalement c'est bon."</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+
+const ARBO = {
+  id:'site', label:'Parking P. Mistral', icon:'🏗️', type:'Site',
+  meta:'Grenoble · Livraison S28 2026 · 120 emplacements',
+  children:[{
+    id:'bat', label:'Ouvrage principal', icon:'🏢', type:'Bâtiment',
+    meta:'2 niveaux souterrains · R-1 et R-2',
+    children:[
+      { id:'r1', label:'Niveau R-1', icon:'⬇️', type:'Niveau',
+        meta:'60 emplacements · 3 zones',
+        children:[
+          { id:'zA', label:'Zone A — Accès / Circulation', icon:'🔄', type:'Zone',
+            meta:'Rampes, allées, sorties piétons',
+            children:[
+              {id:'A1',label:'Rampe d\'accès nord',icon:'📍',type:'Espace',meta:'Éclairage sécurité + signalétique'},
+              {id:'A2',label:'Allée centrale nord',icon:'📍',type:'Espace',meta:'18 luminaires LED circulation'},
+              {id:'A3',label:'Sortie piétons nord',icon:'📍',type:'Espace',meta:'4 BAES + 1 interphone'},
+            ]},
+          { id:'zB', label:'Zone B — Stationnement nord', icon:'🚗', type:'Zone',
+            meta:'60 emplacements · 3 rangées',
+            children:[
+              {id:'B1',label:'Rangée B1 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+              {id:'B2',label:'Rangée B2 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+              {id:'B3',label:'Rangée B3 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+            ]},
+          { id:'zC', label:'Zone C — Locaux techniques R-1', icon:'⚙️', type:'Zone',
+            meta:'TGBT, GTB, ventilation',
+            children:[
+              {id:'C1',label:'Local TGBT',icon:'📍',type:'Espace',meta:'Armoire divisionnaire + câblage'},
+              {id:'C2',label:'Local GTB / Automatisme',icon:'📍',type:'Espace',meta:'Centrale GTB + câblage CFA'},
+              {id:'C3',label:'Local ventilation',icon:'📍',type:'Espace',meta:'Éclairage + détection incendie'},
+            ]},
+        ]},
+      { id:'r2', label:'Niveau R-2', icon:'⬇️', type:'Niveau',
+        meta:'60 emplacements · 3 zones',
+        children:[
+          { id:'zD', label:'Zone D — Accès / Circulation', icon:'🔄', type:'Zone',
+            meta:'Rampe sud, allées, sorties',
+            children:[
+              {id:'D1',label:'Rampe d\'accès sud',icon:'📍',type:'Espace',meta:'Éclairage + détecteur CO'},
+              {id:'D2',label:'Allée centrale sud',icon:'📍',type:'Espace',meta:'16 luminaires LED circulation'},
+              {id:'D3',label:'Sortie piétons sud',icon:'📍',type:'Espace',meta:'4 BAES + 1 bouton appel urgence'},
+            ]},
+          { id:'zE', label:'Zone E — Stationnement sud', icon:'🚗', type:'Zone',
+            meta:'60 emplacements · 3 rangées',
+            children:[
+              {id:'E1',label:'Rangée E1 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+              {id:'E2',label:'Rangée E2 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+              {id:'E3',label:'Rangée E3 (20 places)',icon:'📍',type:'Espace',meta:'20 luminaires + 4 détecteurs CO'},
+            ]},
+          { id:'zF', label:'Zone F — Locaux techniques R-2', icon:'⚙️', type:'Zone',
+            meta:'Sprinkler, onduleur, BT',
+            children:[
+              {id:'F1',label:'Local sprinkler',icon:'📍',type:'Espace',meta:'Détection incendie + éclairage'},
+              {id:'F2',label:'Local onduleur / BT',icon:'📍',type:'Espace',meta:'Câblage BT + hublots étanche'},
+            ]},
+        ]},
+    ]}
+  ]
+};
+
+const NOMENC = [
+  // Zone A
+  {type:'CFO',eq:'Luminaire LED étanche IP65 circulation',zone:'Zone A',esp:'Allée centrale nord',qty:18,tpu:0.4},
+  {type:'CFO',eq:'BAES (Bloc Autonome Éclairage Sécurité)',zone:'Zone A',esp:'Sortie piétons nord',qty:8,tpu:0.35},
+  {type:'CFA',eq:'Détecteur CO/NO2',zone:'Zone A',esp:'Rampe accès nord',qty:4,tpu:0.5},
+  {type:'CFA',eq:'Caméra surveillance IP',zone:'Zone A',esp:'Allée centrale nord',qty:3,tpu:0.6},
+  {type:'CFA',eq:'Interphone de sécurité',zone:'Zone A',esp:'Sortie piétons nord',qty:1,tpu:0.8},
+  // Zone B
+  {type:'CFO',eq:'Luminaire LED étanche IP65 parking',zone:'Zone B',esp:'Rangées B1/B2/B3',qty:60,tpu:0.5},
+  {type:'CFO',eq:'Détecteur de mouvement',zone:'Zone B',esp:'Rangées B1/B2/B3',qty:12,tpu:0.4},
+  {type:'CFA',eq:'Détecteur CO/NO2',zone:'Zone B',esp:'Rangées B1/B2/B3',qty:12,tpu:0.5},
+  {type:'CFA',eq:'Caméra surveillance IP',zone:'Zone B',esp:'Rangées B1/B2/B3',qty:6,tpu:0.6},
+  // Zone C
+  {type:'CFO',eq:'Armoire divisionnaire AD R-1',zone:'Zone C',esp:'Local TGBT',qty:1,tpu:3.0},
+  {type:'CFO',eq:'Hublot LED étanche (locaux tech)',zone:'Zone C',esp:'Locaux C1/C2/C3',qty:9,tpu:0.3},
+  {type:'CFA',eq:'Centrale détection CO',zone:'Zone C',esp:'Local TGBT',qty:1,tpu:4.0},
+  {type:'CFA',eq:'Centrale incendie CMSI',zone:'Zone C',esp:'Local GTB',qty:1,tpu:6.0},
+  // Zone D
+  {type:'CFO',eq:'Luminaire LED étanche IP65 circulation',zone:'Zone D',esp:'Allée centrale sud',qty:16,tpu:0.4},
+  {type:'CFO',eq:'BAES (Bloc Autonome Éclairage Sécurité)',zone:'Zone D',esp:'Sortie piétons sud',qty:8,tpu:0.35},
+  {type:'CFA',eq:'Détecteur CO/NO2',zone:'Zone D',esp:'Rampe accès sud',qty:4,tpu:0.5},
+  {type:'CFA',eq:'Bouton appel d\'urgence',zone:'Zone D',esp:'Sortie piétons sud',qty:2,tpu:0.5},
+  // Zone E
+  {type:'CFO',eq:'Luminaire LED étanche IP65 parking',zone:'Zone E',esp:'Rangées E1/E2/E3',qty:60,tpu:0.5},
+  {type:'CFO',eq:'Détecteur de mouvement',zone:'Zone E',esp:'Rangées E1/E2/E3',qty:12,tpu:0.4},
+  {type:'CFA',eq:'Détecteur CO/NO2',zone:'Zone E',esp:'Rangées E1/E2/E3',qty:12,tpu:0.5},
+  {type:'CFA',eq:'Lecteur de badge (accès)',zone:'Zone E',esp:'Rampe accès sud',qty:2,tpu:1.0},
+  // Zone F
+  {type:'CFO',eq:'Armoire divisionnaire AD R-2',zone:'Zone F',esp:'Local onduleur BT',qty:1,tpu:3.0},
+  {type:'CFO',eq:'Hublot LED étanche (locaux tech)',zone:'Zone F',esp:'Locaux F1/F2',qty:6,tpu:0.3},
+  {type:'CFA',eq:'Détecteur incendie optique',zone:'Zone F',esp:'Local sprinkler',qty:4,tpu:0.4},
+];
+
+// Planning : zones x semaines S10→S20 (livraison S28)
+// Colonnes : S10 S11 S12 S13 S14(cur) S15 S16 S17 S18 S19 S20
+const WEEKS = ['S10','S11','S12','S13','S14','S15','S16','S17','S18','S19','S20'];
+const CUR_WEEK = 'S14';
+const PLAN = [
+  { zone:'Zone A — Accès / Circulation', niveau:'R-1',
+    pcts:[20, 40, 60, 75, 85, 95,100,100,100,100,100] },
+  { zone:'Zone B — Stationnement nord',  niveau:'R-1',
+    pcts:[ 0, 10, 25, 40, 55, 70, 80, 90,100,100,100] },
+  { zone:'Zone C — Locaux tech. R-1',    niveau:'R-1',
+    pcts:[ 0,  0, 10, 20, 35, 50, 65, 80, 90,100,100] },
+  { zone:'Zone D — Accès / Circulation', niveau:'R-2',
+    pcts:[ 0,  0, 15, 30, 50, 65, 80, 90,100,100,100] },
+  { zone:'Zone E — Stationnement sud',   niveau:'R-2',
+    pcts:[ 0,  0,  0, 10, 25, 40, 55, 70, 85, 95,100] },
+  { zone:'Zone F — Locaux tech. R-2',    niveau:'R-2',
+    pcts:[ 0,  0,  0,  0, 15, 30, 50, 65, 80, 95,100] },
+];
+
+const EXAMPLES = [
+  `Ouais salut, alors R-1 zone A c'est à peu près 80%, les luminaires de circulation sont posés, les BAES aussi. Zone B stationnement on est à 60%, j'ai fini la rangée B1 et B2, B3 c'est en cours. Les locaux tech R-1 c'est 40%, j'attends la livraison du tableau TGBT.`,
+  `Zone A c'est bon, 85%. Par contre zone B on est à 30%, j'ai eu un problème de livraison sur les luminaires parking, j'en ai que 20 sur les 60 prévus. Zone C locaux techniques j'ai pas encore commencé, j'attendais le gros œuvre.`,
+  `Ça avance bien, on a bossé toute la semaine. Les gars ont été productifs. Quelques petits trucs à finir mais globalement c'est bon.`
+];
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function goTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+}
+
+// ══════════════════════════════════════════════
+// ARBORESCENCE
+// ══════════════════════════════════════════════
+const LEVEL_COLORS = {Site:'#5E17EB',Bâtiment:'#5D3AA3',Niveau:'#BAC8CF',Zone:'#FEBE32',Espace:'#EBF0F2'};
+const LEVEL_TXT    = {Site:'#fff',Bâtiment:'#fff',Niveau:'#2A2055',Zone:'#2A2055',Espace:'#BAC8CF'};
+
+function buildArbo(node, depth=0) {
+  const hasChildren = node.children && node.children.length > 0;
+  const div = document.createElement('div');
+
+  const row = document.createElement('div');
+  row.className = 'arbo-node';
+  row.style.paddingLeft = (depth*4)+'px';
+
+  const toggle = document.createElement('span');
+  toggle.className = 'arbo-toggle' + (depth===0?' open':'');
+  toggle.textContent = hasChildren ? '▶' : '';
+  row.appendChild(toggle);
+
+  const icon = document.createElement('span');
+  icon.className = 'arbo-icon';
+  icon.style.background = LEVEL_COLORS[node.type]||'var(--s100)';
+  icon.style.color = LEVEL_TXT[node.type]||'var(--i9)';
+  icon.textContent = node.icon;
+  row.appendChild(icon);
+
+  const label = document.createElement('span');
+  label.className = 'arbo-label';
+  label.textContent = node.label;
+  row.appendChild(label);
+
+  const sub = document.createElement('span');
+  sub.className = 'arbo-sub';
+  sub.textContent = node.type;
+  row.appendChild(sub);
+
+  div.appendChild(row);
+
+  let childrenDiv = null;
+  if(hasChildren) {
+    childrenDiv = document.createElement('div');
+    childrenDiv.className = 'arbo-children' + (depth===0?' open':'');
+    node.children.forEach(c => childrenDiv.appendChild(buildArbo(c, depth+1)));
+    div.appendChild(childrenDiv);
+  }
+
+  row.addEventListener('click', () => {
+    // toggle
+    if(hasChildren && childrenDiv) {
+      const open = childrenDiv.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+    }
+    // select
+    document.querySelectorAll('.arbo-node').forEach(n=>n.classList.remove('sel'));
+    row.classList.add('sel');
+    showArboDetail(node);
+  });
+
+  return div;
+}
+
+function showArboDetail(node) {
+  const d = document.getElementById('arbo-detail');
+  const equip = NOMENC.filter(n => {
+    if(node.type==='Zone') return n.zone.includes(node.label.split('—')[0].trim().slice(-6).trim());
+    if(node.type==='Espace') return n.esp.includes(node.id);
+    return false;
+  });
+  const totalH = equip.reduce((s,e)=>s+e.qty*e.tpu,0);
+  d.innerHTML = `
+    <div class="card-t">${node.type} — ${node.label}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:rgba(94,23,235,.05);border-radius:7px;padding:10px 12px">
+        <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--s400);margin-bottom:4px">Type</div>
+        <div style="font-size:13px;font-weight:600;color:var(--p)">${node.type}</div>
+      </div>
+      <div style="background:var(--s50);border-radius:7px;padding:10px 12px">
+        <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--s400);margin-bottom:4px">Détail</div>
+        <div style="font-size:11px;color:var(--i8)">${node.meta}</div>
+      </div>
+    </div>
+    ${node.children ? `<div style="font-size:10px;font-weight:600;color:var(--s400);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px">${node.children.length} élément(s) enfant</div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+    ${node.children.map(c=>`<div style="display:flex;align-items:center;gap:7px;padding:5px 8px;background:var(--s50);border-radius:6px;font-size:11px">
+      <span style="background:${LEVEL_COLORS[c.type]||'var(--s100)'};color:${LEVEL_TXT[c.type]||'var(--i9)'};border-radius:3px;padding:1px 5px;font-size:9px;font-weight:600">${c.type}</span>
+      <span style="font-weight:500;color:var(--i9)">${c.label}</span>
+    </div>`).join('')}
+    </div>` : `<div style="font-size:11px;color:var(--s400)">Niveau feuille — pas de sous-éléments</div>`}
+    ${totalH>0 ? `<div style="margin-top:14px;padding:10px 12px;background:rgba(94,23,235,.05);border-radius:7px;font-size:11px">
+      <span style="font-weight:500;color:var(--p)">${totalH.toFixed(1)}h</span> <span style="color:var(--s400)">estimées sur cette zone</span>
+    </div>` : ''}
+  `;
+}
+
+document.getElementById('arbo-tree').appendChild(buildArbo(ARBO));
+
+// ══════════════════════════════════════════════
+// NOMENCLATURE
+// ══════════════════════════════════════════════
+const tbody = document.getElementById('nomenc-body');
+NOMENC.forEach(n => {
+  const total = (n.qty * n.tpu).toFixed(1);
+  tbody.innerHTML += `<tr>
+    <td><span class="badge badge-${n.type.toLowerCase()}">${n.type}</span></td>
+    <td class="bold">${n.eq}</td>
+    <td><span class="badge badge-zone">${n.zone}</span></td>
+    <td style="color:var(--s400)">${n.esp}</td>
+    <td style="font-weight:600;font-family:var(--fhead)">${n.qty}</td>
+    <td style="color:var(--ps)">${n.tpu}h</td>
+    <td style="font-weight:600;color:var(--p)">${total}h</td>
+  </tr>`;
+});
+
+// ══════════════════════════════════════════════
+// PLANNING
+// ══════════════════════════════════════════════
+const pt = document.getElementById('plan-table');
+const curIdx = WEEKS.indexOf(CUR_WEEK);
+
+// Header
+let hrow = `<thead><tr><th class="zone-h">Zone</th>`;
+WEEKS.forEach((w,i) => {
+  hrow += `<th class="${i===curIdx?'week-cur':''}">${w}${i===curIdx?' ▼':''}</th>`;
+});
+hrow += '</tr></thead>';
+pt.innerHTML = hrow;
+
+// Body
+let tbody2 = '<tbody>';
+let prevNiveau = '';
+PLAN.forEach(r => {
+  if(r.niveau !== prevNiveau) {
+    tbody2 += `<tr><td colspan="${WEEKS.length+1}" style="background:var(--i9);color:rgba(255,255,255,.5);font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:7px 12px">${r.niveau}</td></tr>`;
+    prevNiveau = r.niveau;
+  }
+  tbody2 += `<tr><td class="zone-name">${r.zone}<div class="sub">${r.pcts.filter(p=>p>0).length} semaines actives</div></td>`;
+  r.pcts.forEach((p,i) => {
+    const cls = p===0?'pct-0':p===100?'pct-done':p>50?'pct-high':p>25?'pct-mid':'pct-low';
+    tbody2 += `<td class="${i===curIdx?'week-cur':''}" style="text-align:center">`;
+    if(p>0) tbody2 += `<span class="pct-cell ${cls}">${p}%</span>`;
+    tbody2 += `</td>`;
+  });
+  tbody2 += '</tr>';
+});
+tbody2 += '</tbody>';
+pt.innerHTML += tbody2;
+
+// ══════════════════════════════════════════════
+// SIMULATION
+// ══════════════════════════════════════════════
+const BOT_QUESTIONS = `Bonjour Karim 👋 Point chantier rapide — S14 :
+
+1. Zone A (Accès R-1) — cible 85% cette semaine, tu en es où ?
+2. Zone B (Stationnement nord) — cible 55%, avancement rangées B1/B2/B3 ?
+3. Zone C (Locaux tech R-1) — cible 35%, le TGBT est livré ?
+4. Un problème matériel ou planning à signaler ?`;
+
+function addMsg(text, from='bot', delay=0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const msgs = document.getElementById('messages');
+      const typing = document.createElement('div');
+      if(from==='bot') {
+        typing.className='msg-typing';
+        typing.innerHTML='<span></span><span></span><span></span>';
+        msgs.appendChild(typing);
+        msgs.scrollTop=msgs.scrollHeight;
+        setTimeout(()=>{
+          msgs.removeChild(typing);
+          const m=document.createElement('div');
+          m.className='msg msg-bot';
+          m.innerHTML=text.replace(/\n/g,'<br>')+`<div class="msg-time">${new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</div>`;
+          msgs.appendChild(m);
+          msgs.scrollTop=msgs.scrollHeight;
+          resolve();
+        },1200);
+      } else {
+        const m=document.createElement('div');
+        m.className='msg msg-user';
+        m.innerHTML=text.replace(/\n/g,'<br>')+`<div class="msg-time">${new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})}</div>`;
+        msgs.appendChild(m);
+        msgs.scrollTop=msgs.scrollHeight;
+        resolve();
+      }
+    }, delay);
+  });
+}
+
+// Init conversation
+(async()=>{
+  await addMsg(BOT_QUESTIONS,'bot',400);
+})();
+
+function useExample(i) {
+  document.getElementById('vocal-input').value = EXAMPLES[i];
+}
+
+async function sendMessage() {
+  const inp = document.getElementById('vocal-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value='';
+
+  await addMsg(text,'user');
+
+  // Show processing
+  const res = document.getElementById('sim-result');
+  res.innerHTML=`<div class="res-card"><div style="display:flex;align-items:center;gap:10px;padding:8px 0"><div class="spin"></div><span style="font-size:11px;color:var(--p)">Transcription Whisper…</span></div></div>`;
+
+  await new Promise(r=>setTimeout(r,800));
+  res.innerHTML=`<div class="res-card"><div style="display:flex;align-items:center;gap:10px;padding:8px 0"><div class="spin"></div><span style="font-size:11px;color:var(--p)">Extraction GPT-4o · croisement planning…</span></div></div>`;
+
+  await new Promise(r=>setTimeout(r,1000));
+
+  // Analyse locale (pas d'API dans ce démo)
+  const t = text.toLowerCase();
+  const extracted = analyseText(t);
+  renderResult(extracted, text);
+
+  // Bot reply
+  const followups = extracted.alerts.length > 0
+    ? `Merci Karim 👍\n\n⚠️ ${extracted.alerts[0]}\n\nPeux-tu préciser ?`
+    : `Merci Karim 👍 Tout est bien noté, le dashboard DR est mis à jour. Bonne fin de semaine !`;
+  await addMsg(followups,'bot',400);
+}
+
+function analyseText(t) {
+  const zones = [
+    { z:'Zone A', patterns:['zone a','r-1 zone a','accès'], cible:85 },
+    { z:'Zone B', patterns:['zone b','stationnement nord','rangée b'], cible:55 },
+    { z:'Zone C', patterns:['zone c','locaux tech','tgbt','local'], cible:35 },
+    { z:'Zone D', patterns:['zone d','r-2 zone d','accès sud'], cible:50 },
+    { z:'Zone E', patterns:['zone e','stationnement sud','rangée e'], cible:25 },
+    { z:'Zone F', patterns:['zone f','locaux tech r-2','sprinkler'], cible:15 },
+  ];
+
+  const nums = t.match(/(\d+)\s*%/g)||[];
+  const pcts = nums.map(n=>parseInt(n));
+
+  const results = [];
+  const alerts = [];
+
+  zones.forEach((z,i) => {
+    const found = z.patterns.some(p=>t.includes(p));
+    if(found) {
+      // Try to find a % nearby
+      let pct = pcts[results.length] || null;
+      if(!pct) {
+        // guess from keywords
+        if(t.includes('fini') || t.includes('terminé') || t.includes('100')) pct=100;
+        else if(t.includes('bien') || t.includes('bon') || t.includes('avance')) pct = z.cible - 5 + Math.floor(Math.random()*15);
+        else if(t.includes('bloqué') || t.includes('problème') || t.includes('attends')) pct = Math.floor(z.cible * 0.5);
+        else pct = z.cible + Math.floor(Math.random()*10) - 5;
+      }
+      pct = Math.max(0, Math.min(100, pct));
+      const ecart = pct - z.cible;
+      results.push({ zone:z.z, pct, cible:z.cible, ecart });
+      if(ecart < -10) alerts.push(`${z.z} : déclaré ${pct}% vs cible ${z.cible}% — écart de ${Math.abs(ecart)}pts`);
+    }
+  });
+
+  // Si réponse vague (pas de % ni de zones)
+  if(results.length === 0) {
+    alerts.push('Réponse trop vague — aucun avancement chiffré détecté. Relance nécessaire.');
+  }
+
+  return { results, alerts };
+}
+
+function renderResult(data, rawText) {
+  const res = document.getElementById('sim-result');
+  const vague = data.results.length === 0;
+
+  let html = `<div class="res-card">
+    <div class="res-title purple">Extraction IA — Avancement déclaré</div>`;
+
+  if(vague) {
+    html += `<div style="background:rgba(254,190,50,.1);border-left:3px solid var(--y);border-radius:0 6px 6px 0;padding:10px 14px;font-size:11.5px;color:var(--i9)">
+      ⚠️ Réponse vague — aucun avancement chiffré détecté.<br>
+      <span style="color:var(--s400)">Le bot va relancer avec des questions précises par zone.</span>
+    </div>`;
+  } else {
+    data.results.forEach(r => {
+      const ec = r.ecart >= 0 ? `+${r.ecart}` : `${r.ecart}`;
+      const cls = Math.abs(r.ecart) > 10 ? 'alert' : 'up';
+      html += `<div class="res-row">
+        <span class="res-zone">${r.zone}</span>
+        <span class="res-pct ${cls}">${r.pct}%</span>
+        <span style="font-size:10px;color:var(--s400)">cible ${r.cible}% · <span style="color:${r.ecart<-10?'var(--ps)':r.ecart>=0?'var(--p)':'var(--s400)'}">${ec}pts</span></span>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+
+  if(data.alerts.length > 0) {
+    html += `<div class="res-card">
+      <div class="res-title yellow" style="color:var(--i9)">⚠️ Alertes détectées</div>`;
+    data.alerts.forEach(a => {
+      html += `<div style="background:rgba(254,190,50,.1);border-radius:6px;padding:8px 12px;font-size:11.5px;color:var(--i9);margin-bottom:6px">${a}</div>`;
+    });
+    html += `</div>`;
+  }
+
+  if(!vague) {
+    html += `<div class="res-card">
+      <div class="res-title purple">Questions de relance générées</div>`;
+    data.results.filter(r=>Math.abs(r.ecart)>10).forEach((r,i) => {
+      html += `<div class="question-item">
+        <div class="q-num">${i+1}</div>
+        <div class="q-text">"${r.zone} — tu es à ${r.pct}% mais le planning attendait ${r.cible}%. Qu'est-ce qui a bloqué ?"</div>
+      </div>`;
+    });
+    if(data.results.every(r=>Math.abs(r.ecart)<=10)) {
+      html += `<div style="font-size:11px;color:var(--p);padding:6px 0">✅ Pas d'écart significatif — aucune relance nécessaire cette semaine.</div>`;
+    }
+    html += `</div>`;
+  }
+
+  res.innerHTML = html;
+}
+</script>
+</body>
+</html>
