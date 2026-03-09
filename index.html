@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EarlySign · Dashboard DR — Tour Constellation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --p:     #5E17EB;
+  --p-d:   #311686;
+  --p-m:   #4F26DB;
+  --p-l:   #EEE6FD;
+  --p-10:  rgba(94,23,235,.10);
+  --p-06:  rgba(94,23,235,.06);
+  --y:     #FEBE32;
+  --y-d:   #C99200;
+  --y-10:  rgba(254,190,50,.12);
+  --ink:   #2A2055;
+  --ink-70:#504880;
+  --ink-40:#9490B0;
+  --bg:    #F0F2F8;
+  --s1:    #F4F5F8;
+  --s2:    #ECEEF4;
+  --card:  #FFFFFF;
+  --bd:    #E4E6EF;
+  --ok:    #16A34A;
+  --ok-bg: rgba(34,197,94,.08);
+  --err:   #DC2626;
+  --err-bg:rgba(220,38,38,.08);
+  --warn:  #D97706;
+  --warn-bg:rgba(217,119,6,.08);
+  --font:      'Inter', system-ui, sans-serif;
+  --font-head: 'Montserrat', sans-serif;
+  --r:  8px;
+  --r3: 4px;
+  --r-pill: 999px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 13px;
+}
+
+/* ── NAV ── */
+.nav {
+  background: var(--card);
+  border-bottom: 1px solid var(--bd);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hdr-left { display: flex; align-items: center; gap: 14px; }
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+.logo-seve { font-weight: 800; font-family: var(--font-head); color: var(--ink); font-size: 15px; letter-spacing: -.5px; }
+.logo-up { font-weight: 800; font-family: var(--font-head); color: var(--y); font-size: 9px; vertical-align: super; letter-spacing: .05em; }
+.hdr-sep { width: 1px; height: 22px; background: var(--bd); }
+.hdr-titles {}
+.hdr-cat { font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--p); }
+.hdr-title { font-size: 14px; font-weight: 700; color: var(--ink); font-family: var(--font-head); }
+.hdr-title span { color: var(--p); }
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+.tag {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r-pill);
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-70);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  animation: pulse 2.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.8); }
+}
+.week-badge {
+  background: var(--p);
+  color: #fff;
+  border-radius: var(--r-pill);
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* ── MAIN ── */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px;
+}
+
+/* ── SECTION LABEL ── */
+.sec {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec::after { content: ''; flex: 1; height: 1px; background: var(--bd); }
+
+/* ── CARD ── */
+.ccard {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 18px 20px;
+}
+.ccard-t {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  margin-bottom: 14px;
+}
+
+/* ── KPI GRID ── */
+.g-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  transition: border-color .15s;
+  cursor: default;
+}
+.kpi:hover { border-color: var(--p); }
+.kpi .lbl {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  margin-bottom: 8px;
+}
+.kpi .val {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  line-height: 1;
+  font-family: var(--font-head);
+  color: var(--ink);
+}
+.kpi .val.accent { color: var(--p); }
+.kpi .val.ok { color: var(--ok); }
+.kpi .val.err { color: var(--err); }
+.kpi .val.warn { color: var(--warn); }
+.kpi .sub { font-size: 10px; color: var(--ink-40); margin-top: 5px; }
+
+/* ── PROGRESS HERO ── */
+.prog-hero {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 20px;
+}
+.prog-pct {
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--p);
+  font-family: var(--font-head);
+  min-width: 120px;
+}
+.prog-hero-right { flex: 1; }
+.prog-bar-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  margin-bottom: 10px;
+}
+.prog-bar-wrap {
+  background: var(--s2);
+  border-radius: 100px;
+  height: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.prog-bar {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--p-m), var(--p));
+  transition: width 1.2s cubic-bezier(.22,1,.36,1);
+  width: 0%;
+}
+.prog-sub { font-size: 11px; color: var(--ink-70); }
+.prog-sub b { color: var(--ink); }
+
+/* ── ZONES TABLE ── */
+.zones-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+.zones-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+.zones-table th {
+  background: var(--s1);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+  padding: 9px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--bd);
+  white-space: nowrap;
+}
+.zones-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--s2);
+  color: var(--ink-70);
+  vertical-align: middle;
+}
+.zones-table tr:last-child td { border-bottom: none; }
+.zones-table tr:hover td { background: var(--p-03, rgba(94,23,235,.02)); }
+.zones-table td:first-child { font-weight: 600; color: var(--ink); }
+.pct-cell { font-weight: 700; font-family: var(--font-head); color: var(--ink); }
+.mini-bar-wrap { background: var(--s2); border-radius: 100px; height: 4px; width: 80px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px; }
+.mini-bar { height: 100%; border-radius: 100px; background: var(--p); }
+
+/* ── SIGNAL BADGE ── */
+.sig {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: var(--r3);
+  padding: 3px 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.sig.ok { background: var(--ok-bg); color: var(--ok); }
+.sig.err { background: var(--err-bg); color: var(--err); }
+.sig.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* ── ALERTES ── */
+.alertes { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.alerte {
+  border-radius: var(--r);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.alerte.err { background: var(--err-bg); border-left: 3px solid var(--err); }
+.alerte.warn { background: var(--warn-bg); border-left: 3px solid var(--warn); }
+.alerte.ok { background: var(--ok-bg); border-left: 3px solid var(--ok); }
+.alerte-icon { font-size: 16px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.alerte-body {}
+.alerte-title { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+.alerte.err .alerte-title { color: var(--err); }
+.alerte.warn .alerte-title { color: var(--warn); }
+.alerte.ok .alerte-title { color: var(--ok); }
+.alerte-desc { font-size: 11px; color: var(--ink-70); line-height: 1.5; }
+
+/* ── CHART GRID ── */
+.charts2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.chart-wrap { position: relative; height: 220px; }
+
+/* ── CONTROLE COHERENCE ── */
+.coher-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.coher-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--s2);
+  font-size: 11.5px;
+}
+.coher-row:last-child { border-bottom: none; }
+.coher-label { color: var(--ink-70); font-weight: 500; }
+.coher-val { font-weight: 700; font-family: var(--font-head); color: var(--ink); font-size: 13px; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 10px;
+  color: var(--ink-40);
+}
+.footer span { color: var(--p); font-weight: 700; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .g-hero { grid-template-columns: 1fr 1fr; }
+  .charts2, .coher-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .main { padding: 16px; }
+  .g-hero { grid-template-columns: 1fr; }
+  .prog-pct { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="hdr-left">
+      <div class="logo">
+        <span class="logo-seve">SEVE</span><span class="logo-up">UP</span>
+      </div>
+      <div class="hdr-sep"></div>
+      <div class="hdr-titles">
+        <div class="hdr-cat">EarlySign · Dashboard DR</div>
+        <div class="hdr-title">Tour Constellation — <span>Paris La Défense</span></div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <span class="week-badge">Semaine 14</span>
+      <span class="tag"><span class="live-dot"></span>Mis à jour le 7 mars 2026</span>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPI GRID -->
+  <div class="sec">Indicateurs clés · Semaine 14</div>
+  <div class="g-hero">
+    <div class="kpi">
+      <div class="lbl">Avancement global</div>
+      <div class="val accent" id="kpi-avancement">0%</div>
+      <div class="sub">Cumulé depuis démarrage</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Heures théoriques S14</div>
+      <div class="val">34.5h</div>
+      <div class="sub">Déclaration terrain</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Heures pointées S14</div>
+      <div class="val warn">38.0h</div>
+      <div class="sub">+10% vs théorique</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Zones en dérive</div>
+      <div class="val err">1 / 5</div>
+      <div class="sub">R+3 Plateau C · alerte active</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS HERO -->
+  <div class="prog-hero">
+    <div class="prog-pct" id="prog-pct">0%</div>
+    <div class="prog-hero-right">
+      <div class="prog-bar-label">Avancement global chantier · Semaine 14</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+      <div class="prog-sub">
+        <b>38%</b> d'avancement déclaré — chantier Tour Constellation (Bureaux, Paris La Défense) · <b>5 zones</b> suivies · <b>29 équipements</b> référencés BIM
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTES -->
+  <div class="sec">Recommandations prioritaires · S14</div>
+  <div class="alertes">
+    <div class="alerte err">
+      <div class="alerte-icon">🔴</div>
+      <div class="alerte-body">
+        <div class="alerte-title">URGENT — R+3 Plateau C</div>
+        <div class="alerte-desc">Avancement déclaré 25% mais heures pointées 2× supérieures (9.8h vs 6.5h théoriques — écart +51%). Investiguer : sous-productivité ou erreur de déclaration.</div>
+      </div>
+    </div>
+    <div class="alerte warn">
+      <div class="alerte-icon">🟠</div>
+      <div class="alerte-body">
+        <div class="alerte-title">À SUIVRE — RDC Accueil</div>
+        <div class="alerte-desc">Écart BL matériel sur luminaires décoration (19 déclarés / 15 livrés) et détecteurs thermovel (6 déclarés / 4 livrés). Vérifier réception en cours ou stocks non réceptionnés.</div>
+      </div>
+    </div>
+    <div class="alerte ok">
+      <div class="alerte-icon">✅</div>
+      <div class="alerte-body">
+        <div class="alerte-title">RAS — Plateaux A, B + Parking</div>
+        <div class="alerte-desc">Cohérence confirmée. Avancement conforme au programme. Aucune action requise cette semaine.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVANCEMENT PAR ZONE -->
+  <div class="sec">Avancement par zone · Semaine 14</div>
+  <div class="ccard" style="margin-bottom:20px">
+    <div class="zones-table-wrap">
+      <table class="zones-table">
+        <thead>
+          <tr>
+            <th>Zone</th>
+            <th>% CFO</th>
+            <th>% CFA</th>
+            <th>% Moyen</th>
+            <th>H. théoriques</th>
+            <th>H. pointées</th>
+            <th>Écart</th>
+            <th>BL Matériel</th>
+            <th>Signal</th>
+          </tr>
+        </thead>
+        <tbody id="zones-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="sec">Analyse visuelle · Répartition & cohérence</div>
+  <div class="charts2">
+    <div class="ccard">
+      <div class="ccard-t">Avancement CFO vs CFA par zone</div>
+      <div class="chart-wrap">
+        <canvas id="chartZones"></canvas>
+      </div>
+    </div>
+    <div class="ccard">
+      <div class="ccard-t">Répartition heures théoriques vs pointées</div>
+      <div class="chart-wrap">
+        <canvas id="chartHeures"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLE COHERENCE -->
+  <div class="sec">Moteur de cohérence · Croisements objectifs</div>
+  <div class="coher-grid">
+    <div class="ccard">
+      <div class="ccard-t">Contrôle 1 — Heures pointées vs avancement déclaré</div>
+      <div id="coher-heures"></div>
+    </div>
+    <div class="ccard">
+      <div class="ccard-t">Contrôle 2 — Bons de livraison vs quantités posées</div>
+      <div id="coher-bl"></div>
+    </div>
+  </div>
+
+  <!-- SYNTHESE -->
+  <div class="sec">Synthèse semaine · Signal global chantier</div>
+  <div class="g-hero" style="margin-bottom:32px">
+    <div class="kpi">
+      <div class="lbl">Zones avec dérive heures</div>
+      <div class="val err">1 / 5</div>
+      <div class="sub">🔴 Zone R+3 Plateau C</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Écarts BL matériel</div>
+      <div class="val warn">2 / 7</div>
+      <div class="sub">🟠 RDC Luminaires + Détecteurs</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Zones cohérentes</div>
+      <div class="val ok">4 / 5</div>
+      <div class="sub">✅ Plateaux A, B, Accueil, Parking</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Signal global</div>
+      <div class="val warn" style="font-size:18px">⚠ VIGILANCE</div>
+      <div class="sub">Dérive R+3 à investiguer — conforme global</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Généré par <span>SeveUp · EarlySign</span> · Dashboard DR automatique · chaque vendredi après saisie terrain
+  </div>
+
+</div>
+
+<!-- TOOLTIP -->
+<div id="tip-ecart" style="display:none;position:fixed;z-index:9999;background:#2A2055;color:#fff;border-radius:var(--r);padding:14px 16px;font-size:11px;line-height:1.6;width:280px;box-shadow:0 8px 24px rgba(0,0,0,.22)">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--y);margin-bottom:8px">Calcul écart</div>
+  <p>L'écart est calculé entre les heures théoriques (issues de la déclaration terrain pondérée) et les heures réellement pointées sur le chantier. Seuil de tolérance : ±15%.</p>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const ZONES = [
+  { zone: 'R+1 — Plateau A',   cfo: 52, cfa: 45, moy: 49, h_theo: 12.5, h_point: 13.0, ecart: '+4%',  bl: '✅ OK',    signal: 'ok'  },
+  { zone: 'R+2 — Plateau B',   cfo: 38, cfa: 30, moy: 35, h_theo: 8.0,  h_point: 7.5,  ecart: '-7%',  bl: '✅ OK',    signal: 'ok'  },
+  { zone: 'R+3 — Plateau C',   cfo: 28, cfa: 22, moy: 25, h_theo: 6.5,  h_point: 9.8,  ecart: '+51%', bl: '✅ OK',    signal: 'err' },
+  { zone: 'RDC — Accueil',     cfo: 45, cfa: 35, moy: 41, h_theo: 4.0,  h_point: 4.2,  ecart: '+5%',  bl: '🟠 ÉCART', signal: 'warn'},
+  { zone: 'Sous-sol — Parking',cfo: 33, cfa: 20, moy: 28, h_theo: 3.5,  h_point: 3.5,  ecart: '0%',   bl: '✅ OK',    signal: 'ok'  },
+];
+
+const COHER_HEURES = [
+  { zone: 'R+1 — Plateau A',   theo: 12.5, point: 13.0, ecart_pct: 4,    statut: 'ok' },
+  { zone: 'R+2 — Plateau B',   theo: 8.0,  point: 7.5,  ecart_pct: -6.2, statut: 'ok' },
+  { zone: 'R+3 — Plateau C',   theo: 6.5,  point: 9.8,  ecart_pct: 50.8, statut: 'err'},
+  { zone: 'RDC — Accueil',     theo: 4.0,  point: 4.2,  ecart_pct: 5.0,  statut: 'ok' },
+  { zone: 'Sous-sol — Parking',theo: 3.5,  point: 3.5,  ecart_pct: 0,    statut: 'ok' },
+];
+
+const COHER_BL = [
+  { item: 'R+1 — Luminaires LED',       decl: 19, livre: 19, statut: 'ok'   },
+  { item: 'R+2 — Luminaires LED',       decl: 22, livre: 22, statut: 'ok'   },
+  { item: 'R+3 — Luminaires LED',       decl: 18, livre: 18, statut: 'ok'   },
+  { item: 'RDC — Luminaires déco',      decl: 19, livre: 15, statut: 'warn' },
+  { item: 'Sous-sol — Luminaires étanche', decl: 12, livre: 12, statut: 'ok' },
+  { item: 'RDC — Détecteurs thermovel', decl: 6,  livre: 4,  statut: 'warn' },
+];
+
+const PROGRESS = 38;
+
+// ── ANIMATIONS ────────────────────────────────────────────────
+setTimeout(() => {
+  document.getElementById('prog-bar').style.width = PROGRESS + '%';
+}, 80);
+
+const dur = 1200, t0 = performance.now();
+const pctEl = document.getElementById('prog-pct');
+const kpiEl = document.getElementById('kpi-avancement');
+(function tick(now) {
+  const tt = Math.min((now - t0) / dur, 1);
+  const e  = 1 - Math.pow(1 - tt, 3);
+  const v  = (PROGRESS * e).toFixed(1) + '%';
+  pctEl.textContent = v;
+  kpiEl.textContent = v;
+  if (tt < 1) requestAnimationFrame(tick);
+})(t0);
+
+// ── TABLE ZONES ───────────────────────────────────────────────
+const tbody = document.getElementById('zones-tbody');
+ZONES.forEach(z => {
+  const sigLabel = z.signal === 'ok' ? '✅ OK' : z.signal === 'err' ? '🔴 ALERTE' : '🟠 VIGILANCE';
+  const ecartNum = parseInt(z.ecart);
+  const ecartColor = Math.abs(ecartNum) > 15 ? 'var(--err)' : Math.abs(ecartNum) > 5 ? 'var(--warn)' : 'var(--ok)';
+
+  tbody.innerHTML += `
+  <tr>
+    <td>${z.zone}</td>
+    <td class="pct-cell">${z.cfo}%
+      <span class="mini-bar-wrap"><span class="mini-bar" style="width:${z.cfo}%;background:var(--p)"></span></span>
+    </td>
+    <td class="pct-cell">${z.cfa}%
+      <span class="mini-bar-wrap"><span class="mini-bar" style="width:${z.cfa}%;background:var(--p-m)"></span></span>
+    </td>
+    <td class="pct-cell" style="color:var(--p)">${z.moy}%</td>
+    <td>${z.h_theo}h</td>
+    <td>${z.h_point}h</td>
+    <td style="font-weight:700;color:${ecartColor}">${z.ecart}</td>
+    <td>${z.bl}</td>
+    <td><span class="sig ${z.signal}">${sigLabel}</span></td>
+  </tr>`;
+});
+
+// ── CONTROLE HEURES ───────────────────────────────────────────
+const coherHeuresEl = document.getElementById('coher-heures');
+COHER_HEURES.forEach(r => {
+  const ecartSign = r.ecart_pct > 0 ? '+' : '';
+  const ecartColor = Math.abs(r.ecart_pct) > 15 ? 'var(--err)' : 'var(--ink-70)';
+  const icon = r.statut === 'ok' ? '✅' : '🔴';
+  coherHeuresEl.innerHTML += `
+  <div class="coher-row">
+    <span class="coher-label">${r.zone}</span>
+    <span class="coher-val" style="color:${ecartColor}">${icon} ${ecartSign}${r.ecart_pct}%</span>
+  </div>`;
+});
+
+// ── CONTROLE BL ───────────────────────────────────────────────
+const coherBlEl = document.getElementById('coher-bl');
+COHER_BL.forEach(r => {
+  const icon = r.statut === 'ok' ? '✅' : '🟠';
+  const color = r.statut === 'ok' ? 'var(--ink-70)' : 'var(--warn)';
+  coherBlEl.innerHTML += `
+  <div class="coher-row">
+    <span class="coher-label">${r.item}</span>
+    <span class="coher-val" style="color:${color}">${icon} ${r.decl} / ${r.livre}</span>
+  </div>`;
+});
+
+// ── CHART ZONES ───────────────────────────────────────────────
+new Chart(document.getElementById('chartZones'), {
+  type: 'bar',
+  data: {
+    labels: ZONES.map(z => z.zone.split(' — ')[0]),
+    datasets: [
+      {
+        label: 'CFO (%)',
+        data: ZONES.map(z => z.cfo),
+        backgroundColor: 'rgba(94,23,235,.75)',
+        borderRadius: 4,
+      },
+      {
+        label: 'CFA (%)',
+        data: ZONES.map(z => z.cfa),
+        backgroundColor: 'rgba(254,190,50,.75)',
+        borderRadius: 4,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { padding: 14, boxWidth: 10, font: { size: 10 } } },
+      tooltip: { backgroundColor: '#2A2055', titleColor: '#fff', bodyColor: '#9490B0', borderColor: '#5E17EB', borderWidth: 1, padding: 10 }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(228,230,239,.5)' }, ticks: { font: { size: 10 } } },
+      y: {
+        grid: { color: 'rgba(228,230,239,.5)' },
+        ticks: { font: { size: 10 }, callback: v => v + '%' },
+        max: 100, min: 0
+      }
+    }
+  }
+});
+
+// ── CHART HEURES ──────────────────────────────────────────────
+new Chart(document.getElementById('chartHeures'), {
+  type: 'bar',
+  data: {
+    labels: ZONES.map(z => z.zone.split(' — ')[0]),
+    datasets: [
+      {
+        label: 'Théoriques (h)',
+        data: ZONES.map(z => z.h_theo),
+        backgroundColor: 'rgba(94,23,235,.65)',
+        borderRadius: 4,
+      },
+      {
+        label: 'Pointées (h)',
+        data: ZONES.map(z => z.h_point),
+        backgroundColor: ZONES.map(z => {
+          const e = Math.abs(parseInt(z.ecart));
+          return e > 15 ? 'rgba(220,38,38,.7)' : e > 5 ? 'rgba(217,119,6,.7)' : 'rgba(22,163,74,.65)';
+        }),
+        borderRadius: 4,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { padding: 14, boxWidth: 10, font: { size: 10 } } },
+      tooltip: { backgroundColor: '#2A2055', titleColor: '#fff', bodyColor: '#9490B0', borderColor: '#5E17EB', borderWidth: 1, padding: 10 }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(228,230,239,.5)' }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: 'rgba(228,230,239,.5)' }, ticks: { font: { size: 10 }, callback: v => v + 'h' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
